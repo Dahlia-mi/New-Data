@@ -1,0 +1,2090 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>New Data</title>
+<style>
+  :root {
+    --bg: #1a1520;
+    --surface: #231c2c;
+    --surface2: #2c2438;
+    --border: #3d3050;
+    --accent: #c9a0b4;
+    --accent2: #9b7faa;
+    --accent3: #d4b8c7;
+    --success: #a8c5a0;
+    --danger: #d4837a;
+    --warn: #c9b07a;
+    --text: #ede0e8;
+    --muted: #7d6e82;
+    --rank-s: #e8c87a;
+    --rank-a: #c9a0b4;
+    --rank-b: #9b7faa;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif;
+    font-size: 14px;
+    min-height: 100vh;
+  }
+
+  /* ─── Header ─── */
+  header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .logo {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    color: var(--accent3);
+    flex-shrink: 0;
+  }
+
+  .logo span {
+    color: var(--accent2);
+  }
+
+  .header-meta {
+    color: var(--muted);
+    font-size: 12px;
+    flex: 1;
+  }
+
+  .zone-tabs {
+    display: flex;
+    gap: 4px;
+  }
+
+  .zone-tab {
+    padding: 6px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 12px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .zone-tab.active {
+    background: var(--accent2);
+    border-color: var(--accent2);
+    color: #fff;
+  }
+
+  .zone-tab:hover:not(.active) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ─── Main Layout ─── */
+  main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 20px 24px;
+  }
+
+  .zone {
+    display: none;
+  }
+
+  .zone.active {
+    display: block;
+  }
+
+  /* ─── Zone Header ─── */
+  .zone-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .zone-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: var(--accent2);
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border: 1px solid var(--accent2);
+    border-radius: 12px;
+  }
+
+  .zone-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--accent3);
+  }
+
+  .zone-desc {
+    font-size: 12px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+
+  /* ─── Search Panel ─── */
+  .search-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 16px;
+  }
+
+  .search-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  .search-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+
+  .search-group label {
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .search-input, .search-select {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 8px 12px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .search-input:focus, .search-select:focus {
+    border-color: var(--accent2);
+  }
+
+  .search-input::placeholder {
+    color: var(--muted);
+  }
+
+  .search-input {
+    width: 260px;
+  }
+
+  .search-select {
+    min-width: 140px;
+    cursor: pointer;
+  }
+
+  .search-select option {
+    background: var(--surface2);
+  }
+
+  .search-group-wide {
+    flex: 1;
+    min-width: 200px;
+  }
+
+  .search-group-wide .search-input {
+    width: 100%;
+  }
+
+  /* ─── Checkbox Toggles ─── */
+  .toggle-row {
+    display: flex;
+    gap: 16px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+  }
+
+  .toggle-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    color: var(--muted);
+    user-select: none;
+    transition: color 0.2s;
+  }
+
+  .toggle-item:hover {
+    color: var(--accent);
+  }
+
+  .toggle-item input[type="checkbox"] {
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border: 1px solid var(--border);
+    border-radius: 3px;
+    background: var(--surface2);
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s;
+  }
+
+  .toggle-item input[type="checkbox"]:checked {
+    background: var(--accent2);
+    border-color: var(--accent2);
+  }
+
+  .toggle-item input[type="checkbox"]:checked::after {
+    content: '✓';
+    position: absolute;
+    top: -1px;
+    left: 1px;
+    font-size: 11px;
+    color: #fff;
+    font-weight: 700;
+  }
+
+  .toggle-item input[type="checkbox"]:checked + span {
+    color: var(--accent);
+  }
+
+  /* ─── Search Buttons ─── */
+  .search-actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 14px;
+  }
+
+  .btn {
+    padding: 9px 20px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .btn-primary {
+    background: var(--accent2);
+    color: #fff;
+  }
+
+  .btn-primary:hover {
+    background: var(--accent);
+  }
+
+  .btn-primary:active {
+    transform: scale(0.97);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--muted);
+    border: 1px solid var(--border);
+  }
+
+  .btn-ghost:hover {
+    color: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .btn-sm {
+    padding: 5px 12px;
+    font-size: 12px;
+  }
+
+  /* ─── Results Header ─── */
+  .results-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+
+  .results-count {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .results-count strong {
+    color: var(--accent3);
+    font-size: 16px;
+  }
+
+  .sort-row {
+    display: flex;
+    gap: 8px;
+    margin-left: auto;
+    align-items: center;
+  }
+
+  .sort-label {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .sort-btn {
+    padding: 4px 12px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 11px;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .sort-btn.active {
+    background: var(--surface2);
+    border-color: var(--accent2);
+    color: var(--accent);
+  }
+
+  /* ─── Cards Grid ─── */
+  .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+    gap: 12px;
+  }
+
+  /* ─── Case Card ─── */
+  .case-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+    transition: border-color 0.2s, transform 0.15s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .case-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px;
+    height: 100%;
+    background: var(--border);
+    transition: background 0.2s;
+  }
+
+  .case-card:hover {
+    border-color: var(--accent2);
+    transform: translateY(-1px);
+  }
+
+  .case-card:hover::before {
+    background: var(--accent2);
+  }
+
+  /* 判定済みカードの色変化 */
+  .case-card.judged-good::before  { background: var(--success); }
+  .case-card.judged-check::before { background: var(--warn); }
+  .case-card.judged-ng::before    { background: var(--muted); }
+  .case-card.judged-good  { border-color: color-mix(in srgb, var(--success) 40%, var(--border)); }
+  .case-card.judged-check { border-color: color-mix(in srgb, var(--warn) 40%, var(--border)); }
+  .case-card.judged-ng    { opacity: 0.55; }
+
+  /* ─── Card Header ─── */
+  .card-head {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+
+  .rank-badge {
+    flex-shrink: 0;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    white-space: nowrap;
+  }
+
+  .rank-s    { background: rgba(232,200,122,0.15); color: var(--rank-s); border: 1px solid rgba(232,200,122,0.3); }
+  .rank-a    { background: rgba(201,160,180,0.15); color: var(--rank-a); border: 1px solid rgba(201,160,180,0.3); }
+  .rank-b    { background: rgba(155,127,170,0.15); color: var(--rank-b); border: 1px solid rgba(155,127,170,0.3); }
+  .rank-ref  { background: rgba(125,110,130,0.15); color: var(--muted); border: 1px solid var(--border); }
+
+  .card-title {
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.5;
+    color: var(--text);
+    flex: 1;
+  }
+
+  /* ─── Card Meta ─── */
+  .card-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 10px;
+  }
+
+  .meta-pill {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    color: var(--muted);
+    padding: 2px 8px;
+    background: var(--surface2);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+  }
+
+  .meta-pill.deadline { color: var(--warn); border-color: rgba(201,176,122,0.3); }
+  .meta-pill.deadline-urgent { color: var(--danger); border-color: rgba(212,131,122,0.3); }
+  .meta-pill.price    { color: var(--success); border-color: rgba(168,197,160,0.3); }
+  .meta-pill.proc     { color: var(--accent); border-color: rgba(201,160,180,0.3); }
+
+  /* ─── Card Scores ─── */
+  .card-scores {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 12px;
+    align-items: center;
+  }
+
+  .score-bar-wrap {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .score-label {
+    font-size: 10px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .score-bar {
+    flex: 1;
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .score-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 0.6s ease;
+  }
+
+  .score-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--accent3);
+    white-space: nowrap;
+  }
+
+  .profit-info {
+    font-size: 11px;
+    color: var(--success);
+  }
+
+  /* ─── Judgment Buttons ─── */
+  .judge-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+
+  .judge-btn {
+    padding: 4px 10px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 11px;
+    font-family: inherit;
+    font-weight: 600;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .judge-btn:hover {
+    border-color: var(--accent2);
+    color: var(--accent);
+  }
+
+  .judge-btn.selected-○  { background: rgba(168,197,160,0.2); border-color: var(--success); color: var(--success); }
+  .judge-btn.selected-△  { background: rgba(201,176,122,0.2); border-color: var(--warn); color: var(--warn); }
+  .judge-btn.selected-×S,
+  .judge-btn.selected-×R,
+  .judge-btn.selected-×Q,
+  .judge-btn.selected-×P,
+  .judge-btn.selected-×T,
+  .judge-btn.selected-×W { background: rgba(212,131,122,0.15); border-color: var(--muted); color: var(--muted); }
+
+  /* ─── Card Footer ─── */
+  .card-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+
+  .org-name {
+    font-size: 11px;
+    color: var(--muted);
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .spec-link {
+    font-size: 11px;
+    color: var(--accent2);
+    text-decoration: none;
+    padding: 3px 10px;
+    border: 1px solid var(--accent2);
+    border-radius: 6px;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  .spec-link:hover {
+    background: var(--accent2);
+    color: #fff;
+  }
+
+  /* ─── State Screens ─── */
+  .state-screen {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--muted);
+  }
+
+  .state-screen .icon {
+    font-size: 40px;
+    margin-bottom: 16px;
+    opacity: 0.4;
+  }
+
+  .state-screen p {
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .state-screen strong {
+    color: var(--accent);
+    display: block;
+    font-size: 16px;
+    margin-bottom: 8px;
+  }
+
+  /* ─── Loading ─── */
+  .loading-wrap {
+    text-align: center;
+    padding: 50px 20px;
+  }
+
+  .spinner {
+    width: 36px;
+    height: 36px;
+    border: 3px solid var(--border);
+    border-top-color: var(--accent2);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin: 0 auto 16px;
+  }
+
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
+  .loading-text {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .loading-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 6px;
+    opacity: 0.6;
+  }
+
+  /* ─── Progress Bar ─── */
+  .fetch-progress {
+    max-width: 320px;
+    margin: 16px auto 0;
+    background: var(--surface2);
+    border-radius: 3px;
+    height: 3px;
+    overflow: hidden;
+  }
+
+  .fetch-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    border-radius: 3px;
+    transition: width 0.3s ease;
+  }
+
+  /* ─── Error Toast ─── */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 18px;
+    font-size: 13px;
+    color: var(--text);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    z-index: 999;
+    max-width: 360px;
+    animation: slideUp 0.3s ease;
+    display: none;
+  }
+
+  .toast.show { display: block; }
+  .toast.error { border-color: var(--danger); }
+  .toast.success { border-color: var(--success); }
+
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── CORS Note ─── */
+  .cors-note {
+    background: rgba(201,176,122,0.08);
+    border: 1px solid rgba(201,176,122,0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 12px;
+    color: var(--warn);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* ─── Judgment Panel Tab ─── */
+  .judge-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+  }
+
+  .judge-panel-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--accent3);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .judge-count-badge {
+    background: var(--accent2);
+    color: #fff;
+    font-size: 11px;
+    padding: 1px 8px;
+    border-radius: 10px;
+  }
+
+  .judge-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 12px;
+  }
+
+  .judge-table th {
+    text-align: left;
+    padding: 6px 10px;
+    color: var(--muted);
+    font-weight: 600;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+  }
+
+  .judge-table td {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(61,48,80,0.5);
+    color: var(--text);
+    vertical-align: top;
+  }
+
+  .judge-table tr:last-child td { border-bottom: none; }
+
+  .judge-code {
+    font-weight: 700;
+    font-size: 13px;
+  }
+
+  .judge-code.○ { color: var(--success); }
+  .judge-code.△ { color: var(--warn); }
+  .judge-code.ng { color: var(--muted); }
+
+  /* ─── API Info ─── */
+  .api-info {
+    font-size: 11px;
+    color: var(--muted);
+    text-align: right;
+    margin-top: 8px;
+  }
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--accent2); }
+</style>
+</head>
+<body>
+
+<!-- ─────────────────────── HEADER ─────────────────────── -->
+<header>
+  <div class="logo">New<span>Data</span></div>
+  <div class="header-meta" id="headerMeta">入札案件モニタリング</div>
+  <div class="zone-tabs">
+    <button class="zone-tab" onclick="switchZone('zone1')">ZONE 1 — GAS通知ログ</button>
+    <button class="zone-tab active" onclick="switchZone('zone2')">ZONE 2 — 案件検索</button>
+    <button class="zone-tab" onclick="switchZone('zone3')">判定一覧</button>
+  </div>
+</header>
+
+<!-- ─────────────────────── MAIN ─────────────────────── -->
+<main>
+
+  <!-- ═══════════════════ ZONE 1 ═══════════════════ -->
+  <div id="zone1" class="zone">
+    <div class="zone-header">
+      <span class="zone-label">Zone 1</span>
+      <span class="zone-title">GAS通知ログ</span>
+      <span class="zone-desc">毎朝7時のLINE通知案件 — 過去1週間分</span>
+    </div>
+
+    <!-- URL設定バー -->
+    <div class="search-panel" style="margin-bottom:14px;padding:14px 18px;">
+      <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+        <span style="font-size:11px;color:var(--muted);font-weight:600;text-transform:uppercase;letter-spacing:.05em;">GAS URL</span>
+        <input id="gasUrlInput" type="text"
+          placeholder="https://script.google.com/macros/s/..."
+          style="flex:1;min-width:300px;background:var(--surface2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;color:var(--text);font-size:13px;outline:none;"
+          oninput="saveGasUrl(this.value)">
+        <button class="btn btn-primary" onclick="loadZone1()">📋 読み込む</button>
+        <button class="btn btn-ghost" onclick="loadZone1()" id="zone1ReloadBtn" style="display:none">↺ 再読み込み</button>
+        <span id="zone1Status" style="font-size:11px;color:var(--muted);"></span>
+      </div>
+    </div>
+
+    <!-- フィルターバー -->
+    <div id="zone1FilterBar" style="display:none;margin-bottom:12px;">
+      <div class="results-header">
+        <div class="results-count">
+          <strong id="zone1Count">0</strong> 件
+          <span style="font-size:11px;color:var(--muted);margin-left:6px;" id="zone1Period"></span>
+        </div>
+        <div class="sort-row">
+          <span class="sort-label">絞り込み：</span>
+          <button class="sort-btn active" id="z1viewAll"  onclick="setZone1View('all')">全件</button>
+          <button class="sort-btn" id="z1viewGood" onclick="setZone1View('good')">○ のみ</button>
+          <button class="sort-btn" id="z1viewUnj"  onclick="setZone1View('unj')">未判定</button>
+          <button class="sort-btn" id="z1viewHigh" onclick="setZone1View('high')">高スコア</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="zone1Content">
+      <div class="state-screen">
+        <div class="icon">📋</div>
+        <p><strong>GAS通知ログ</strong>GASのウェブアプリURLを入力して「読み込む」をクリックしてください。<br>
+        <span style="font-size:12px;">ZONE 2と同じURLが使えます。</span></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════ ZONE 2 ═══════════════════ -->
+  <div id="zone2" class="zone active">
+    <div class="zone-header">
+      <span class="zone-label">Zone 2</span>
+      <span class="zone-title">案件検索</span>
+      <span class="zone-desc">官公需情報ポータル API から直接取得</span>
+    </div>
+
+    <!-- 検索パネル -->
+    <div class="search-panel">
+      <div class="search-row">
+        <div class="search-group search-group-wide">
+          <label>キーワード検索</label>
+          <input class="search-input" id="kwInput" type="text"
+            placeholder="例：保存水、ティッシュ、コピー用紙"
+            onkeydown="if(event.key==='Enter') runSearch()">
+        </div>
+
+        <div class="search-group">
+          <label>カテゴリ</label>
+          <select class="search-select" id="categorySelect">
+            <option value="1">物品（全国）</option>
+            <option value="nagano">長野北部 役務</option>
+            <option value="2">役務（全国）</option>
+            <option value="1,2">物品＋役務</option>
+          </select>
+        </div>
+
+        <div class="search-group">
+          <label>並び順</label>
+          <select class="search-select" id="sortSelect">
+            <option value="score">スコア順</option>
+            <option value="deadline">締切が近い順</option>
+            <option value="price">価格が高い順</option>
+            <option value="new">新着順</option>
+          </select>
+        </div>
+
+        <div class="search-group">
+          <label>表示件数</label>
+          <select class="search-select" id="limitSelect">
+            <option value="30">30件</option>
+            <option value="50">50件</option>
+            <option value="100">100件</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- フィルタートグル -->
+      <div class="toggle-row">
+        <label class="toggle-item">
+          <input type="checkbox" id="filterDeadline" checked>
+          <span>締切2日以上のみ</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="filterExclude" checked>
+          <span>除外ワードフィルター</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="filterAreaRestrict" checked>
+          <span>地域資格制限を除外</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="filterHasUrl" checked>
+          <span>仕様書URLあり優先</span>
+        </label>
+        <label class="toggle-item">
+          <input type="checkbox" id="filterJudged">
+          <span>判定済みを非表示</span>
+        </label>
+      </div>
+
+      <div class="search-actions">
+        <button class="btn btn-primary" id="searchBtn" onclick="runSearch()">🔍 検索する</button>
+        <button class="btn btn-ghost" onclick="resetSearch()">リセット</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadPreset('bichiku')">🏆 防災・備蓄</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadPreset('shoumouhin')">📦 消耗品</button>
+        <button class="btn btn-ghost btn-sm" onclick="loadPreset('jimu')">📄 事務用品</button>
+        <div id="apiStatus" class="api-info"></div>
+      </div>
+    </div>
+
+    <!-- CORS Note -->
+    <div class="cors-note" id="corsNote" style="display:none">
+      ⚙️ <strong>GASのURLが未設定です。</strong>上の「GAS URL」欄にデプロイURLを入力すると検索できます。 → <input id="gasEndpointInput" type="text" placeholder="https://script.google.com/macros/s/..." style="background:var(--surface2);border:1px solid rgba(201,176,122,0.4);border-radius:6px;padding:4px 10px;color:var(--text);font-size:12px;width:400px;outline:none;margin:0 8px;" oninput="saveGasEndpoint(this.value)"><button class="btn btn-sm btn-ghost" onclick="runSearch()" style="margin-left:4px">再検索</button>
+    </div>
+
+    <!-- 検索結果 -->
+    <div class="results-header" id="resultsHeader" style="display:none">
+      <div class="results-count">
+        <strong id="resultCount">0</strong> 件ヒット
+        <span id="filterNote" style="font-size:11px;color:var(--muted);margin-left:6px;"></span>
+      </div>
+      <div class="sort-row">
+        <span class="sort-label">表示：</span>
+        <button class="sort-btn active" id="viewAll" onclick="setView('all')">全件</button>
+        <button class="sort-btn" id="viewGood" onclick="setView('good')">○ のみ</button>
+        <button class="sort-btn" id="viewCheck" onclick="setView('check')">△ のみ</button>
+        <button class="sort-btn" id="viewUnj" onclick="setView('unj')">未判定</button>
+      </div>
+    </div>
+
+    <div id="cardsArea">
+      <div class="state-screen">
+        <div class="icon">🌸</div>
+        <p><strong>New Data</strong>キーワードを入力して案件を検索してください。<br>何も入力しない場合は防災・備蓄品が検索されます。</p>
+      </div>
+    </div>
+
+  </div><!-- /zone2 -->
+
+  <!-- ═══════════════════ ZONE 3 ═══════════════════ -->
+  <div id="zone3" class="zone">
+    <div class="zone-header">
+      <span class="zone-label">判定一覧</span>
+      <span class="zone-title">今週の判定まとめ</span>
+      <span class="zone-desc">localStorageに保存された判定結果</span>
+    </div>
+    <div class="judge-panel" id="judgePanelContent">
+      <div class="state-screen">
+        <div class="icon">📊</div>
+        <p><strong>まだ判定なし</strong>ZONE 2で案件を判定すると、ここに記録されます。</p>
+      </div>
+    </div>
+  </div>
+
+</main>
+
+<div class="toast" id="toast"></div>
+
+<!-- ─────────────────────── SCRIPT ─────────────────────── -->
+<script>
+'use strict';
+
+// ══════════════════════════════════════════════════════════
+// 定数・設定
+// ══════════════════════════════════════════════════════════
+
+const KKJ_API = 'https://www.kkj.go.jp/api/';
+
+// GASデプロイURL（設定するとCORSなしで検索できます）
+// GASのウェブアプリとしてデプロイ後、URLをここに貼るかページ上の入力欄に入力してください
+let GAS_ENDPOINT = localStorage.getItem('nd_gas_endpoint') || 'https://script.google.com/macros/s/AKfycbzf5eMel0QfDW4C6AexsWzl71lJAsQHzv99tkLN2kMrtMogidKLarulfiU-xWVRb56z/exec';
+
+const AREA_CODES = [
+  '202011','202088','202118','202134','204641',
+  '204659','204811','204829','204837','204918','204730'
+];
+
+const NOTIFY_ITEMS = [
+  '保存水','備蓄水','非常食','アルファ米','防災用品','災害備蓄品',
+  '簡易トイレ','毛布','アルミブランケット','避難所用品','備蓄品',
+  'トイレットペーパー','ティッシュ','ティッシュペーパー',
+  'ゴミ袋','ごみ袋','ロープ','養生テープ','ガムテープ',
+  'ブルーシート','軍手','土のう袋','ウェットティッシュ',
+  'マスク','消毒液','乾電池','衛生用品','日用品',
+  'コピー用紙','文房具','事務用品'
+];
+
+const KW_SCORE = {
+  '保存水':50,'備蓄水':50,'非常食':48,'アルファ米':48,
+  '防災用品':45,'災害備蓄品':45,'簡易トイレ':45,
+  '毛布':42,'アルミブランケット':42,'備蓄品':42,
+  'トイレットペーパー':45,'ティッシュ':42,'ティッシュペーパー':42,
+  'ゴミ袋':40,'ごみ袋':40,'ロープ':40,
+  '養生テープ':40,'ガムテープ':40,'ブルーシート':40,'軍手':40,
+  'マスク':35,'消毒液':35,'乾電池':30,'衛生用品':28,
+  'コピー用紙':25,'文房具':20,'事務用品':20,'日用品':25
+};
+
+const EXCLUDE_TITLE = [
+  '建築工事','土木工事','舗装工事','設備工事','電気工事',
+  '管工事','解体工事','改修工事','修繕工事',
+  'HEPA','空調機','ボイラー','制御盤','キュービクル',
+  'サーバー','サーバ','システム構築','ソフトウェア',
+  '分析装置','測定器','医療機器','実験器具','理化学',
+  'ホイールローダ','除雪グレーダ','バックホウ','ユンボ',
+  'フォークリフト','トラクター','高所作業車','クレーン',
+  '建設機械','特殊機械','車両購入','自動車購入'
+];
+
+const AREA_RESTRICT = [
+  '市内に所在','市内に本店','市内に本社','市内に支店','市内業者','市内の業者',
+  '町内に所在','町内業者','村内に所在','村内業者',
+  '区内に所在','区内業者',
+  '県内に所在','県内に本店','県内業者','県内に営業所',
+  '都内に所在','都内に本店','道内に所在','府内に所在',
+  '地元業者','地域業者','地元企業',
+  '名簿に登載','名簿に登録','有資格者名簿','指名競争入札有資格',
+  '主たる事務所','主たる営業所',
+  '本社・本店または支店','本店または支店を有する',
+  '納品実績','契約実績','履行実績','同種業務の実績',
+  '納入実績','施工実績','類似実績'
+];
+
+// 作業系ワード（重み付き）
+const WORK_WORDS = [
+  { word:'取付',   pt:25 },
+  { word:'据付',   pt:25 },
+  { word:'設置',   pt:20 },
+  { word:'施工',   pt:30 },
+  { word:'撤去',   pt:30 },
+  { word:'調整',   pt:15 },
+  { word:'試運転', pt:20 },
+  { word:'保守',   pt:20 },
+  { word:'点検',   pt:20 },
+  { word:'回収',   pt:15 },
+  { word:'廃棄',   pt:20 },
+  { word:'梱包作業', pt:10 },
+  { word:'仕分け作業', pt:10 },
+  { word:'配送',   pt:10 },
+  { word:'運搬',   pt:15 },
+  { word:'積込',   pt:15 }
+];
+
+const PROC_SCORE = [
+  { word:'オープンカウンター', pt:40, label:'🟢 OC' },
+  { word:'見積', pt:30, label:'🟡 見積' },
+  { word:'随意', pt:25, label:'🟡 随意' },
+  { word:'指名', pt:10, label:'🟠 指名' },
+  { word:'一般競争', pt:5, label:'🔵 一般' }
+];
+
+const FIRST_ITEMS = [
+  '保存水','備蓄水','非常食','アルファ米','トイレットペーパー',
+  'ゴミ袋','ごみ袋','軍手','マスク','毛布','ブルーシート',
+  '土のう袋','養生テープ','ガムテープ','ロープ','ティッシュ'
+];
+
+const PRESETS = {
+  bichiku: '保存水 OR 備蓄水 OR 非常食 OR アルファ米 OR 防災用品 OR 簡易トイレ OR 毛布 OR 備蓄品',
+  shoumouhin: 'トイレットペーパー OR ティッシュ OR ゴミ袋 OR 軍手 OR マスク OR 消毒液 OR ブルーシート OR 養生テープ',
+  jimu: 'コピー用紙 OR 文房具 OR 事務用品'
+};
+
+// ══════════════════════════════════════════════════════════
+// 状態
+// ══════════════════════════════════════════════════════════
+
+let allResults = [];    // 全取得結果
+let filteredResults = []; // フィルター後
+let currentView = 'all';
+let isSearching = false;
+
+// ══════════════════════════════════════════════════════════
+// UI ユーティリティ
+// ══════════════════════════════════════════════════════════
+
+function switchZone(zoneId) {
+  document.querySelectorAll('.zone').forEach(z => z.classList.remove('active'));
+  document.querySelectorAll('.zone-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(zoneId).classList.add('active');
+  const idx = ['zone1','zone2','zone3'].indexOf(zoneId);
+  document.querySelectorAll('.zone-tab')[idx].classList.add('active');
+  if (zoneId === 'zone3') renderJudgePanel();
+}
+
+function showToast(msg, type = '') {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'toast show ' + type;
+  setTimeout(() => el.classList.remove('show'), 3500);
+}
+
+function setSearching(v) {
+  isSearching = v;
+  document.getElementById('searchBtn').disabled = v;
+  document.getElementById('searchBtn').textContent = v ? '検索中...' : '🔍 検索する';
+}
+
+function setView(v) {
+  currentView = v;
+  ['viewAll','viewGood','viewCheck','viewUnj'].forEach(id => {
+    document.getElementById(id).classList.remove('active');
+  });
+  document.getElementById('view' + v.charAt(0).toUpperCase() + v.slice(1)).classList.add('active');
+  renderCards();
+}
+
+// ══════════════════════════════════════════════════════════
+// プリセット・リセット
+// ══════════════════════════════════════════════════════════
+
+function loadPreset(key) {
+  document.getElementById('kwInput').value = '';
+  document.getElementById('categorySelect').value = '1';
+  // プリセットは内部的に使うだけで表示はシンプルに
+  const labels = { bichiku:'防災・備蓄品', shoumouhin:'消耗品', jimu:'事務用品' };
+  document.getElementById('kwInput').placeholder = labels[key] + ' を検索中...';
+  window._presetKey = key;
+  runSearch();
+}
+
+function resetSearch() {
+  document.getElementById('kwInput').value = '';
+  document.getElementById('kwInput').placeholder = '例：保存水、ティッシュ、コピー用紙';
+  document.getElementById('categorySelect').value = '1';
+  document.getElementById('sortSelect').value = 'score';
+  document.getElementById('limitSelect').value = '30';
+  document.getElementById('filterDeadline').checked = true;
+  document.getElementById('filterExclude').checked = true;
+  document.getElementById('filterAreaRestrict').checked = true;
+  document.getElementById('filterHasUrl').checked = true;
+  document.getElementById('filterJudged').checked = false;
+  window._presetKey = null;
+  allResults = [];
+  filteredResults = [];
+  document.getElementById('resultsHeader').style.display = 'none';
+  document.getElementById('cardsArea').innerHTML = `
+    <div class="state-screen">
+      <div class="icon">🌸</div>
+      <p><strong>New Data</strong>キーワードを入力して案件を検索してください。</p>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// XML パーサー（ブラウザ用）
+// ══════════════════════════════════════════════════════════
+
+function parseKkjXML(xmlText) {
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(xmlText, 'text/xml');
+  const results = doc.querySelectorAll('SearchResult');
+  const items = [];
+
+  results.forEach(el => {
+    const gv = tag => {
+      const c = el.querySelector(tag);
+      return c ? c.textContent.trim() : '';
+    };
+    const fd = s => s ? s.slice(0, 10) : '';
+
+    const raw_deadline = fd(gv('TenderSubmissionDeadline')) || fd(gv('SubmissionDeadline')) || fd(gv('CftCloseDate'));
+    const raw_issue = fd(gv('CftIssueDate'));
+    const raw_price = gv('EstimatedPrice');
+    const desc = gv('ProjectDescription');
+
+    // 資格情報抽出
+    let qualification = '';
+    if (desc) {
+      const m = desc.match(/資格[^。]{0,60}|免許[^。]{0,60}|登録[^。]{0,40}/);
+      if (m) qualification = m[0].slice(0, 50);
+    }
+
+    const item = {
+      title:     gv('ProjectName'),
+      org:       gv('OrganizationName'),
+      pref:      gv('PrefectureName'),
+      city:      gv('CityName'),
+      category:  gv('Category'),
+      procedure: gv('ProcedureType'),
+      issueDate: raw_issue,
+      deadline:  raw_deadline,
+      price:     raw_price,
+      url:       gv('ExternalDocumentURI') || gv('NoticeURL'),
+      desc:      desc,
+      qualification: qualification
+    };
+
+    if (item.title) items.push(item);
+  });
+
+  return items;
+}
+
+// ══════════════════════════════════════════════════════════
+// 価格・日付ユーティリティ
+// ══════════════════════════════════════════════════════════
+
+function extractPrice(s) {
+  if (!s) return null;
+  const ps = s.replace(/[,，円￥¥\s]/g, '');
+  let p = parseFloat(ps);
+  if (isNaN(p)) return null;
+  if (s.indexOf('万') !== -1) p *= 10000;
+  return p;
+}
+
+function parseDeadline(str) {
+  if (!str) return null;
+  let m;
+  m = str.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) { const d = new Date(+m[1], +m[2]-1, +m[3]); d.setHours(0,0,0,0); return d; }
+  m = str.match(/(\d{4})\/(\d{2})\/(\d{2})/);
+  if (m) { const d = new Date(+m[1], +m[2]-1, +m[3]); d.setHours(0,0,0,0); return d; }
+  m = str.match(/(\d{4})年(\d{1,2})月(\d{1,2})日/);
+  if (m) { const d = new Date(+m[1], +m[2]-1, +m[3]); d.setHours(0,0,0,0); return d; }
+  m = str.match(/^(\d{4})(\d{2})(\d{2})/);
+  if (m) { const d = new Date(+m[1], +m[2]-1, +m[3]); d.setHours(0,0,0,0); return d; }
+  return null;
+}
+
+function formatDeadline(str) {
+  if (!str) return '不明';
+  const m = str.match(/(\d{4})-(\d{2})-(\d{2})/);
+  if (m) return `${m[2]}/${m[3]}`;
+  return str.slice(0, 10);
+}
+
+function daysLeft(deadlineStr) {
+  const dl = parseDeadline(deadlineStr);
+  if (!dl) return null;
+  const today = new Date(); today.setHours(0,0,0,0);
+  return Math.ceil((dl - today) / (1000 * 60 * 60 * 24));
+}
+
+function formatPrice(s) {
+  const p = extractPrice(s);
+  if (!p) return s || '—';
+  if (p >= 10000) return Math.round(p/10000) + '万円';
+  return p.toLocaleString() + '円';
+}
+
+function calcProfit(item, priceNum) {
+  if (!priceNum) return null;
+  let pMin = 10, pMax = 25;
+  const highMargin = ['保存水','備蓄水','非常食','アルファ米','毛布','ブルーシート','軍手'];
+  for (const h of highMargin) {
+    if (item.title.indexOf(h) !== -1) { pMin = 12; pMax = 30; break; }
+  }
+  return {
+    min: Math.round(priceNum * pMin / 100),
+    max: Math.round(priceNum * pMax / 100),
+    rate: pMin + '〜' + pMax + '%',
+    minRate: pMin
+  };
+}
+
+// ══════════════════════════════════════════════════════════
+// スコア計算
+// ══════════════════════════════════════════════════════════
+
+function scoreItem(item) {
+  let score = 30;
+  const priceNum = extractPrice(item.price);
+  let isFirst = false;
+  let deductLog = []; // デバッグ用
+
+  // ── 品目加点（最大1つ） ──────────────────────────────
+  for (const kw in KW_SCORE) {
+    if (item.title.indexOf(kw) !== -1) { score += KW_SCORE[kw]; break; }
+  }
+
+  // ── 初実績ボーナス ──────────────────────────────────
+  for (const fi of FIRST_ITEMS) {
+    if (item.title.indexOf(fi) !== -1) { isFirst = true; score += 15; break; }
+  }
+
+  // ── 仕入れやすさ加点 ─────────────────────────────────
+  const easyKws = ['保存水','備蓄水','非常食','アルファ米','トイレットペーパー',
+                   'ゴミ袋','ごみ袋','軍手','ブルーシート','毛布','マスク','消毒液'];
+  for (const ek of easyKws) {
+    if (item.title.indexOf(ek) !== -1) { score += 15; break; }
+  }
+
+  // ── 価格帯スコア（20〜40万円帯が最高） ───────────────
+  if (priceNum) {
+    if      (priceNum >= 150000 && priceNum <= 500000) score += 40;
+    else if (priceNum >= 80000  && priceNum < 150000)  score += 30;
+    else if (priceNum >= 500000 && priceNum <= 1000000) score += 25;
+    else if (priceNum > 1000000)                        score += 10;
+    else                                                score += 15;
+  }
+
+  // ── 手続き種別加点 ────────────────────────────────────
+  let procLabel = '';
+  const proc = item.procedure || '';
+  for (const ps of PROC_SCORE) {
+    if (proc.indexOf(ps.word) !== -1) {
+      score += ps.pt; procLabel = ps.label; break;
+    }
+  }
+
+  // ── 作業系ワード減点（工数コスト反映・重み付き） ───────
+  // 複数ヒットで累積減点。ただし上限−60点
+  let workDeduct = 0;
+  let workCount = 0;
+  const titleDesc = item.title + (item.desc || '');
+  for (const ww of WORK_WORDS) {
+    if (titleDesc.indexOf(ww.word) !== -1) {
+      workDeduct += ww.pt;
+      workCount++;
+    }
+  }
+  // 作業が複数重なると追加ペナルティ（複合作業案件）
+  if (workCount >= 3) workDeduct += 20;
+  if (workCount >= 2) workDeduct += 10;
+  score -= Math.min(workDeduct, 60);
+
+  // ── 受注可能性 ────────────────────────────────────────
+  const descAll = (item.desc || '') + item.title;
+  if (descAll.indexOf('1箇所') !== -1 || descAll.indexOf('一箇所') !== -1) score += 20;
+  if (descAll.indexOf('全国') !== -1) score += 15;
+  if (descAll.indexOf('中小企業') !== -1) score += 8;
+  if (item.url) score += 3;
+
+  // ── 利益率ボーナス ────────────────────────────────────
+  const profit = calcProfit(item, priceNum);
+  if (profit) {
+    if      (profit.minRate >= 15) score += 20;
+    else if (profit.minRate >= 10) score += 10;
+  }
+
+  // ── 複数品目ボーナス（備蓄品セットなど） ─────────────
+  const comboKws = ['保存水','非常食','トイレットペーパー','ゴミ袋','軍手','マスク','毛布'];
+  const comboHits = comboKws.filter(k => item.title.indexOf(k) !== -1).length;
+  if (comboHits >= 2) score += 10; // 複数品目まとめ発注はチャンス
+
+  score = Math.min(100, Math.max(0, score));
+
+  // ── ランク ────────────────────────────────────────────
+  let rankLabel, rankClass;
+  if (isFirst && priceNum && priceNum <= 300000) {
+    rankLabel = '🌟 初実績チャンス'; rankClass = 'rank-s';
+  } else if (score >= 80) {
+    rankLabel = '🏆 即入札候補'; rankClass = 'rank-s';
+  } else if (score >= 65) {
+    rankLabel = '⭐ 検討候補'; rankClass = 'rank-a';
+  } else if (score >= 50) {
+    rankLabel = '📦 参考'; rankClass = 'rank-b';
+  } else {
+    rankLabel = '・ 低優先'; rankClass = 'rank-ref';
+  }
+
+  return { score, rankLabel, rankClass, procLabel, priceNum, profit, isFirst, workCount };
+}
+
+// ══════════════════════════════════════════════════════════
+// フィルター
+// ══════════════════════════════════════════════════════════
+
+function applyFilters(items) {
+  const filterDeadline = document.getElementById('filterDeadline').checked;
+  const filterExclude = document.getElementById('filterExclude').checked;
+  const filterArea = document.getElementById('filterAreaRestrict').checked;
+  const filterJudged = document.getElementById('filterJudged').checked;
+
+  return items.filter(item => {
+    // 締切フィルター
+    if (filterDeadline) {
+      const days = daysLeft(item.deadline);
+      if (days !== null && days < 2) return false;
+      if (days === null) {
+        const dl = parseDeadline(item.issueDate);
+        if (dl) {
+          const today = new Date(); today.setHours(0,0,0,0);
+          const est = new Date(dl);
+          est.setDate(est.getDate() + 30);
+          if (est <= today) return false;
+        } else return false;
+      }
+    }
+
+    // 除外ワードフィルター
+    if (filterExclude) {
+      for (const ex of EXCLUDE_TITLE) {
+        if (item.title.indexOf(ex) !== -1) return false;
+      }
+    }
+
+    // 地域資格制限
+    if (filterArea) {
+      const chk = (item.desc || '') + (item.qualification || '');
+      for (const ar of AREA_RESTRICT) {
+        if (chk.indexOf(ar) !== -1) return false;
+      }
+    }
+
+    // 判定済み非表示
+    if (filterJudged) {
+      const key = makeCardKey(item);
+      const j = loadJudgment(key);
+      if (j) return false;
+    }
+
+    return true;
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// API フェッチ
+// ══════════════════════════════════════════════════════════
+
+async function fetchItems(query, category) {
+  const limit = parseInt(document.getElementById('limitSelect').value) || 30;
+
+  // GAS_ENDPOINTが未設定なら入力欄から取得
+  GAS_ENDPOINT = document.getElementById('gasEndpointInput')?.value.trim()
+              || localStorage.getItem('nd_gas_endpoint') || '';
+
+  if (!GAS_ENDPOINT) {
+    document.getElementById('corsNote').style.display = 'flex';
+    throw new Error('GAS URLが未設定です');
+  }
+
+  // クエリ構築
+  let queryStr = query;
+  if (!queryStr && window._presetKey) queryStr = PRESETS[window._presetKey] || '';
+  if (!queryStr) queryStr = '保存水 OR 非常食 OR トイレットペーパー OR ティッシュ OR ゴミ袋 OR 軍手 OR マスク OR 毛布 OR コピー用紙';
+
+  const url = GAS_ENDPOINT
+    + '?action=search'
+    + '&q='        + encodeURIComponent(queryStr)
+    + '&category=' + encodeURIComponent(category)
+    + '&count='    + limit;
+
+  const res = await Promise.race([
+    fetch(url),
+    new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 30000))
+  ]);
+
+  if (!res.ok) throw new Error('HTTP ' + res.status);
+  const json = await res.json();
+  if (!json.ok) throw new Error(json.error || 'GAS APIエラー');
+
+  document.getElementById('corsNote').style.display = 'none';
+  return json.items || [];
+}
+
+// ══════════════════════════════════════════════════════════
+// メイン検索
+// ══════════════════════════════════════════════════════════
+
+async function runSearch() {
+  if (isSearching) return;
+  window._presetKey = window._presetKey || null;
+
+  const query = document.getElementById('kwInput').value.trim();
+  const category = document.getElementById('categorySelect').value;
+
+  setSearching(true);
+  document.getElementById('corsNote').style.display = 'none';
+  document.getElementById('resultsHeader').style.display = 'none';
+  document.getElementById('apiStatus').textContent = '';
+
+  // ローディング表示
+  document.getElementById('cardsArea').innerHTML = `
+    <div class="loading-wrap">
+      <div class="spinner"></div>
+      <div class="loading-text">官公需情報ポータルを検索中...</div>
+      <div class="loading-sub">少々お待ちください（5〜15秒）</div>
+      <div class="fetch-progress"><div class="fetch-bar" id="fetchBar" style="width:0%"></div></div>
+    </div>`;
+
+  // プログレスバー演出
+  let progress = 0;
+  const progInterval = setInterval(() => {
+    progress = Math.min(90, progress + Math.random() * 15);
+    const bar = document.getElementById('fetchBar');
+    if (bar) bar.style.width = progress + '%';
+  }, 600);
+
+  try {
+    const startTime = Date.now();
+    const items = await fetchItems(query, category);
+    clearInterval(progInterval);
+    const bar = document.getElementById('fetchBar');
+    if (bar) bar.style.width = '100%';
+
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(1);
+    allResults = items;
+
+    // フィルター適用
+    filteredResults = applyFilters(items);
+
+    // スコア計算してソート
+    const scored = filteredResults.map(item => {
+      const s = scoreItem(item);
+      return { ...item, _score: s };
+    });
+
+    sortResults(scored);
+    filteredResults = scored;
+
+    // URL優先（filterHasUrlが有効なら先頭グループ）
+    if (document.getElementById('filterHasUrl').checked) {
+      filteredResults.sort((a, b) => {
+        const au = a.url ? 1 : 0, bu = b.url ? 1 : 0;
+        if (au !== bu) return bu - au;
+        return b._score.score - a._score.score;
+      });
+    }
+
+    const limit = parseInt(document.getElementById('limitSelect').value) || 30;
+    filteredResults = filteredResults.slice(0, limit);
+
+    document.getElementById('apiStatus').textContent =
+      `API: ${elapsed}s / 取得${items.length}件 → 表示${filteredResults.length}件`;
+
+    document.getElementById('resultsHeader').style.display = 'flex';
+    document.getElementById('resultCount').textContent = filteredResults.length;
+    document.getElementById('filterNote').textContent =
+      items.length > filteredResults.length
+        ? `（全${items.length}件中 フィルター後）`
+        : '';
+
+    currentView = 'all';
+    ['viewAll','viewGood','viewCheck','viewUnj'].forEach(id =>
+      document.getElementById(id).classList.remove('active'));
+    document.getElementById('viewAll').classList.add('active');
+
+    renderCards();
+    window._presetKey = null;
+  } catch (err) {
+    clearInterval(progInterval);
+    document.getElementById('cardsArea').innerHTML = `
+      <div class="state-screen">
+        <div class="icon">⚠️</div>
+        <p><strong>取得に失敗しました</strong>
+        ネットワークエラーまたはCORSエラーです。<br>
+        Chromeの拡張機能「CORS Unblock」を有効にして再試行してください。<br>
+        <span style="font-size:11px;color:var(--muted)">エラー: ${err.message}</span></p>
+      </div>`;
+    document.getElementById('corsNote').style.display = 'flex';
+  } finally {
+    setSearching(false);
+  }
+}
+
+function sortResults(arr) {
+  const sortBy = document.getElementById('sortSelect').value;
+  if (sortBy === 'score') {
+    arr.sort((a, b) => b._score.score - a._score.score);
+  } else if (sortBy === 'deadline') {
+    arr.sort((a, b) => {
+      const da = daysLeft(a.deadline) ?? 9999;
+      const db = daysLeft(b.deadline) ?? 9999;
+      return da - db;
+    });
+  } else if (sortBy === 'price') {
+    arr.sort((a, b) => (b._score.priceNum || 0) - (a._score.priceNum || 0));
+  } else if (sortBy === 'new') {
+    arr.sort((a, b) => {
+      const da = parseDeadline(a.issueDate) || new Date(0);
+      const db = parseDeadline(b.issueDate) || new Date(0);
+      return db - da;
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// カード描画
+// ══════════════════════════════════════════════════════════
+
+function renderCards() {
+  const area = document.getElementById('cardsArea');
+  if (!filteredResults.length) {
+    area.innerHTML = `
+      <div class="state-screen">
+        <div class="icon">🔍</div>
+        <p><strong>該当案件なし</strong>検索条件を変えてお試しください。</p>
+      </div>`;
+    return;
+  }
+
+  // ビューフィルター
+  let toShow = filteredResults;
+  if (currentView === 'good') {
+    toShow = filteredResults.filter(i => loadJudgment(makeCardKey(i)) === '○');
+  } else if (currentView === 'check') {
+    toShow = filteredResults.filter(i => loadJudgment(makeCardKey(i)) === '△');
+  } else if (currentView === 'unj') {
+    toShow = filteredResults.filter(i => !loadJudgment(makeCardKey(i)));
+  }
+
+  if (!toShow.length) {
+    area.innerHTML = `<div class="state-screen"><div class="icon">📭</div><p>このビューに該当する案件はありません。</p></div>`;
+    return;
+  }
+
+  area.innerHTML = '<div class="cards-grid">' +
+    toShow.map(item => buildCard(item)).join('') +
+    '</div>';
+}
+
+function buildCard(item) {
+  const s = item._score;
+  const key = makeCardKey(item);
+  const judgment = loadJudgment(key);
+  const days = daysLeft(item.deadline);
+
+  // カードクラス
+  let cardClass = 'case-card';
+  if (judgment === '○') cardClass += ' judged-good';
+  else if (judgment === '△') cardClass += ' judged-check';
+  else if (judgment && judgment.startsWith('×')) cardClass += ' judged-ng';
+
+  // 締切ピル
+  let deadlinePill = '';
+  if (item.deadline) {
+    const cls = days !== null && days <= 3 ? 'meta-pill deadline-urgent' : 'meta-pill deadline';
+    const dText = days !== null ? `残${days}日` : '';
+    deadlinePill = `<span class="${cls}">📅 ${formatDeadline(item.deadline)} ${dText}</span>`;
+  }
+
+  // 価格ピル
+  const pricePill = s.priceNum
+    ? `<span class="meta-pill price">💴 ${formatPrice(item.price)}</span>`
+    : (item.price ? `<span class="meta-pill">💴 ${item.price}</span>` : '');
+
+  // 手続きピル
+  const procPill = s.procLabel
+    ? `<span class="meta-pill proc">${s.procLabel}</span>`
+    : (item.procedure ? `<span class="meta-pill">${item.procedure.slice(0,10)}</span>` : '');
+
+  // 都道府県・市区町村
+  const locPill = (item.pref || item.city)
+    ? `<span class="meta-pill">📍 ${item.pref || ''}${item.city ? ' ' + item.city : ''}</span>`
+    : '';
+
+  // スコアバー
+  const scoreBar = `
+    <div class="card-scores">
+      <div class="score-bar-wrap">
+        <span class="score-label">スコア</span>
+        <div class="score-bar"><div class="score-fill" style="width:${s.score}%"></div></div>
+        <span class="score-num">${s.score}</span>
+      </div>
+      ${s.profit ? `<span class="profit-info">利益率 ${s.profit.rate}</span>` : ''}
+      ${s.workCount >= 2 ? `<span style="font-size:10px;color:var(--danger);margin-left:6px">⚠️ 作業${s.workCount}件</span>` : ''}
+    </div>`;
+
+  // 判定ボタン
+  const JUDGE_BTNS = [
+    { code: '○', label: '○ 入札したい' },
+    { code: '△', label: '△ 要確認' },
+    { code: '×S', label: '×S 仕入不明' },
+    { code: '×R', label: '×R 実績不足' },
+    { code: '×Q', label: '×Q 資格不足' },
+    { code: '×P', label: '×P 利益不足' },
+    { code: '×T', label: '×T 専門性高' },
+    { code: '×W', label: '×W 作業あり' }
+  ];
+
+  const judgeBtns = JUDGE_BTNS.map(b => {
+    const sel = judgment === b.code ? ` selected-${b.code}` : '';
+    return `<button class="judge-btn${sel}" data-key="${escHtml(key)}" data-code="${b.code}" onclick="judgeCard(this)">${b.label}</button>`;
+  }).join('');
+
+  // フッター
+  const specLink = item.url
+    ? `<a class="spec-link" href="${escHtml(item.url)}" target="_blank" rel="noopener">仕様書 →</a>`
+    : '';
+
+  return `
+    <div class="${cardClass}" id="card-${escHtml(key)}">
+      <div class="card-head">
+        <span class="${s.rankClass} rank-badge">${s.rankLabel}</span>
+        <span class="card-title">${escHtml(item.title)}</span>
+      </div>
+      <div class="card-meta">
+        ${deadlinePill}${pricePill}${procPill}${locPill}
+      </div>
+      ${scoreBar}
+      <div class="judge-area">${judgeBtns}</div>
+      <div class="card-foot">
+        <span class="org-name">🏛 ${escHtml(item.org || '発注機関不明')}</span>
+        ${specLink}
+      </div>
+    </div>`;
+}
+
+function escHtml(s) {
+  if (!s) return '';
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ══════════════════════════════════════════════════════════
+// 判定ボタン処理 + localStorage
+// ══════════════════════════════════════════════════════════
+
+function makeCardKey(item) {
+  // 発注機関名を含む複合キー（3番：発注機関名の記録）
+  const org = (item.org || '').slice(0, 20);
+  return (item.title + '_' + org + '_' + (item.issueDate || item.deadline || '')).slice(0, 80);
+}
+
+function saveJudgment(key, code) {
+  const all = getJudgments();
+  all[key] = { code, title: '', ts: Date.now() };
+
+  // タイトルも保存
+  const item = filteredResults.find(i => makeCardKey(i) === key);
+  if (item) all[key].title = item.title;
+
+  localStorage.setItem('nd_judgments', JSON.stringify(all));
+}
+
+function loadJudgment(key) {
+  const all = getJudgments();
+  return all[key]?.code || null;
+}
+
+function getJudgments() {
+  try {
+    return JSON.parse(localStorage.getItem('nd_judgments') || '{}');
+  } catch { return {}; }
+}
+
+function judgeCard(btn) {
+  const key = btn.dataset.key;
+  const code = btn.dataset.code;
+
+  // 同じボタンを押したらリセット
+  const current = loadJudgment(key);
+  const newCode = current === code ? null : code;
+
+  if (newCode) {
+    saveJudgment(key, newCode);
+  } else {
+    const all = getJudgments();
+    delete all[key];
+    localStorage.setItem('nd_judgments', JSON.stringify(all));
+  }
+
+  // カード内のボタン更新
+  const card = document.getElementById('card-' + key);
+  if (card) {
+    card.querySelectorAll('.judge-btn').forEach(b => {
+      b.className = 'judge-btn' + (b.dataset.code === newCode ? ` selected-${newCode}` : '');
+    });
+
+    // カードクラス更新
+    card.className = 'case-card';
+    if (newCode === '○') card.classList.add('judged-good');
+    else if (newCode === '△') card.classList.add('judged-check');
+    else if (newCode?.startsWith('×')) card.classList.add('judged-ng');
+  }
+
+  const labels = { '○':'入札したい ✓', '△':'要確認 △' };
+  showToast(newCode ? `判定保存: ${newCode}` : '判定を解除しました',
+    newCode === '○' ? 'success' : '');
+}
+
+// ══════════════════════════════════════════════════════════
+// 判定一覧パネル
+// ══════════════════════════════════════════════════════════
+
+function renderJudgePanel() {
+  const all = getJudgments();
+  const keys = Object.keys(all);
+  const panel = document.getElementById('judgePanelContent');
+
+  if (!keys.length) {
+    panel.innerHTML = `
+      <div class="state-screen">
+        <div class="icon">📊</div>
+        <p><strong>まだ判定なし</strong>ZONE 2で案件を判定すると、ここに記録されます。</p>
+      </div>`;
+    return;
+  }
+
+  const entries = keys.map(k => ({ key: k, ...all[k] }))
+    .sort((a, b) => b.ts - a.ts);
+
+  const good = entries.filter(e => e.code === '○').length;
+  const check = entries.filter(e => e.code === '△').length;
+  const ng = entries.filter(e => e.code?.startsWith('×')).length;
+
+  panel.innerHTML = `
+    <div class="judge-panel-title">
+      判定一覧
+      <span class="judge-count-badge">${entries.length}件</span>
+      <span style="font-size:12px;color:var(--success);margin-left:8px">○ ${good}</span>
+      <span style="font-size:12px;color:var(--warn);margin-left:6px">△ ${check}</span>
+      <span style="font-size:12px;color:var(--muted);margin-left:6px">× ${ng}</span>
+      <button class="btn btn-ghost btn-sm" style="margin-left:auto" onclick="clearJudgments()">全消去</button>
+    </div>
+    <table class="judge-table">
+      <thead>
+        <tr>
+          <th style="width:60px">判定</th>
+          <th>案件名</th>
+          <th style="width:140px">判定日時</th>
+          <th style="width:60px">操作</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${entries.map(e => {
+          const codeClass = e.code === '○' ? '○' : e.code === '△' ? '△' : 'ng';
+          const dt = new Date(e.ts);
+          const dtStr = `${dt.getMonth()+1}/${dt.getDate()} ${dt.getHours()}:${String(dt.getMinutes()).padStart(2,'0')}`;
+          return `<tr>
+            <td><span class="judge-code ${codeClass}">${e.code}</span></td>
+            <td>${escHtml(e.title || e.key.slice(0,30))}</td>
+            <td style="color:var(--muted);font-size:11px">${dtStr}</td>
+            <td><button class="btn btn-ghost btn-sm" onclick="deleteJudge('${e.key.replace(/'/g,"\\'")}')">削除</button></td>
+          </tr>`;
+        }).join('')}
+      </tbody>
+    </table>`;
+}
+
+function clearJudgments() {
+  if (!confirm('全ての判定を消去しますか？')) return;
+  localStorage.removeItem('nd_judgments');
+  renderJudgePanel();
+  showToast('判定データを消去しました');
+}
+
+function deleteJudge(key) {
+  const all = getJudgments();
+  delete all[key];
+  localStorage.setItem('nd_judgments', JSON.stringify(all));
+  renderJudgePanel();
+}
+
+// ══════════════════════════════════════════════════════════
+// ZONE 1 — GASログ
+// ══════════════════════════════════════════════════════════
+
+function saveGasUrl(url) {
+  localStorage.setItem('nd_gas_url', url);
+  saveGasEndpoint(url); // ZONE1とZONE2で共通URL
+}
+
+function saveGasEndpoint(url) {
+  GAS_ENDPOINT = url.trim();
+  localStorage.setItem('nd_gas_endpoint', GAS_ENDPOINT);
+  const inp = document.getElementById('gasEndpointInput');
+  if (inp && inp.value !== GAS_ENDPOINT) inp.value = GAS_ENDPOINT;
+}
+
+async function loadZone1() {
+  const url = document.getElementById('gasUrlInput').value.trim() ||
+              localStorage.getItem('nd_gas_url') || GAS_ENDPOINT || '';
+  if (!url) { showToast('GASのURLを入力してください', 'error'); return; }
+  saveGasEndpoint(url);
+
+  const area = document.getElementById('zone1Content');
+  area.innerHTML = '<div class="loading-wrap"><div class="spinner"></div><div class="loading-text">GAS通知ログを読み込み中...</div></div>';
+
+  try {
+    const res = await Promise.race([
+      fetch(url + '?action=getLog'),
+      new Promise((_, reject) => setTimeout(() => reject(new Error('timeout')), 20000))
+    ]);
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const json = await res.json();
+    if (!json.ok) throw new Error(json.error || 'GAS APIエラー');
+    renderZone1(json.items || []);
+  } catch (e) {
+    area.innerHTML = `<div class="state-screen"><div class="icon">⚠️</div><p><strong>読み込み失敗</strong>${e.message}</p></div>`;
+  }
+}
+
+// ── ZONE 1 データ保持 ──────────────────────────────────────
+let zone1Rows = [];
+let zone1View = 'all';
+
+function setZone1View(v) {
+  zone1View = v;
+  ['z1viewAll','z1viewGood','z1viewUnj','z1viewHigh'].forEach(id =>
+    document.getElementById(id).classList.remove('active'));
+  const map = { all:'z1viewAll', good:'z1viewGood', unj:'z1viewUnj', high:'z1viewHigh' };
+  document.getElementById(map[v]).classList.add('active');
+  renderZone1Cards();
+}
+
+function renderZone1(rows) {
+  zone1Rows = rows;
+  const area = document.getElementById('zone1Content');
+
+  if (!rows.length) {
+    document.getElementById('zone1FilterBar').style.display = 'none';
+    area.innerHTML = '<div class="state-screen"><div class="icon">📋</div><p><strong>ログなし</strong>過去1週間の通知ログがありません。</p></div>';
+    return;
+  }
+
+  // フィルターバー表示
+  document.getElementById('zone1FilterBar').style.display = 'block';
+  document.getElementById('zone1ReloadBtn').style.display = '';
+
+  // 期間表示
+  const dates = rows.map(r => r['通知日時']).filter(Boolean).sort();
+  if (dates.length) {
+    const from = dates[0].slice(0,10), to = dates[dates.length-1].slice(0,10);
+    document.getElementById('zone1Period').textContent =
+      from === to ? from : from + ' 〜 ' + to;
+  }
+
+  zone1View = 'all';
+  ['z1viewAll','z1viewGood','z1viewUnj','z1viewHigh'].forEach(id =>
+    document.getElementById(id).classList.remove('active'));
+  document.getElementById('z1viewAll').classList.add('active');
+  renderZone1Cards();
+}
+
+function renderZone1Cards() {
+  const area = document.getElementById('zone1Content');
+
+  let toShow = zone1Rows;
+  if (zone1View === 'good') {
+    toShow = zone1Rows.filter(r => {
+      const key = makeLogKey(r);
+      return loadJudgment(key) === '○';
+    });
+  } else if (zone1View === 'unj') {
+    toShow = zone1Rows.filter(r => !loadJudgment(makeLogKey(r)));
+  } else if (zone1View === 'high') {
+    toShow = zone1Rows.filter(r => parseInt(r['スコア'] || 0) >= 65);
+  }
+
+  document.getElementById('zone1Count').textContent = toShow.length;
+
+  if (!toShow.length) {
+    area.innerHTML = '<div class="state-screen"><div class="icon">📭</div><p>このビューに該当する案件はありません。</p></div>';
+    return;
+  }
+
+  area.innerHTML = '<div class="cards-grid">' + toShow.map(row => buildZone1Card(row)).join('') + '</div>';
+}
+
+function makeLogKey(row) {
+  return ('log_' + (row['案件ID'] || row['案件名'] || '') + '_' + (row['通知日時'] || '')).slice(0, 80);
+}
+
+function buildZone1Card(row) {
+  const title     = row['案件名']   || '';
+  const org       = row['発注機関'] || '';
+  const pref      = row['都道府県'] || '';
+  const price     = row['予定価格'] || '';
+  const deadline  = row['締切']     || '';
+  const url       = row['URL']      || '';
+  const procedure = row['手続き種別'] || '';
+  const notifyTs  = row['通知日時'] || '';
+  const caseId    = row['案件ID']   || '';
+  const rankLbl   = row['ランク']   || '';
+  const gasScore  = parseInt(row['スコア'] || 0);
+  const profitRate = row['推定利益率'] || '';
+  const gasMemo   = row['メモ']     || '';
+
+  const key = makeLogKey(row);
+  const judgment = loadJudgment(key);
+
+  // ランクバッジ（GASのランクラベルをそのまま使う）
+  let rankClass = 'rank-ref';
+  if (rankLbl.includes('即入札') || rankLbl.includes('初実績')) rankClass = 'rank-s';
+  else if (rankLbl.includes('検討')) rankClass = 'rank-a';
+  else if (rankLbl.includes('参考')) rankClass = 'rank-b';
+
+  // カードクラス
+  let cardClass = 'case-card';
+  if (judgment === '○') cardClass += ' judged-good';
+  else if (judgment === '△') cardClass += ' judged-check';
+  else if (judgment?.startsWith('×')) cardClass += ' judged-ng';
+
+  // 締切ピル
+  const days = daysLeft(deadline);
+  let deadlinePill = '';
+  if (deadline) {
+    const cls = days !== null && days <= 3 ? 'meta-pill deadline-urgent' : 'meta-pill deadline';
+    deadlinePill = `<span class="${cls}">📅 ${formatDeadline(deadline)}${days !== null ? ' 残'+days+'日' : ''}</span>`;
+  }
+
+  // 価格ピル
+  const pricePill = price ? `<span class="meta-pill price">💴 ${formatPrice(price)}</span>` : '';
+
+  // 手続きピル
+  const procPill = procedure ? `<span class="meta-pill proc">${procedure.slice(0,12)}</span>` : '';
+
+  // 都道府県ピル
+  const locPill = pref ? `<span class="meta-pill">📍 ${escHtml(pref)}</span>` : '';
+
+  // 通知日時ピル
+  const tsPill = notifyTs ? `<span class="meta-pill">🔔 ${notifyTs.slice(0,10)}</span>` : '';
+
+  // 案件IDピル
+  const idPill = caseId ? `<span class="meta-pill" style="font-family:monospace;">${escHtml(caseId)}</span>` : '';
+
+  // GASスコアバー
+  const scoreBar = gasScore ? `
+    <div class="card-scores">
+      <div class="score-bar-wrap">
+        <span class="score-label">GASスコア</span>
+        <div class="score-bar"><div class="score-fill" style="width:${gasScore}%"></div></div>
+        <span class="score-num">${gasScore}</span>
+      </div>
+      ${profitRate ? `<span class="profit-info">利益率 ${escHtml(profitRate)}</span>` : ''}
+    </div>` : '';
+
+  // メモ
+  const memoPart = gasMemo ? `
+    <div style="font-size:11px;color:var(--muted);margin-bottom:8px;padding:6px 10px;background:var(--surface2);border-radius:6px;border-left:2px solid var(--accent2);">
+      ${escHtml(gasMemo)}
+    </div>` : '';
+
+  // 判定ボタン
+  const JUDGE_BTNS = [
+    { code:'○',  label:'○ 入札したい' },
+    { code:'△',  label:'△ 要確認' },
+    { code:'×S', label:'×S 仕入不明' },
+    { code:'×R', label:'×R 実績不足' },
+    { code:'×Q', label:'×Q 資格不足' },
+    { code:'×P', label:'×P 利益不足' },
+    { code:'×T', label:'×T 専門性高' },
+    { code:'×W', label:'×W 作業あり' }
+  ];
+  const judgeBtns = JUDGE_BTNS.map(b => {
+    const sel = judgment === b.code ? ` selected-${b.code}` : '';
+    return `<button class="judge-btn${sel}" data-key="${escHtml(key)}" data-code="${b.code}" onclick="judgeCard(this)">${b.label}</button>`;
+  }).join('');
+
+  const specLink = url
+    ? `<a class="spec-link" href="${escHtml(url)}" target="_blank" rel="noopener">仕様書 →</a>`
+    : '';
+
+  return `
+    <div class="${cardClass}" id="card-${escHtml(key)}">
+      <div class="card-head">
+        <span class="${rankClass} rank-badge">${escHtml(rankLbl) || '📦 ログ'}</span>
+        <span class="card-title">${escHtml(title)}</span>
+      </div>
+      <div class="card-meta">
+        ${tsPill}${idPill}${deadlinePill}${pricePill}${procPill}${locPill}
+      </div>
+      ${scoreBar}
+      ${memoPart}
+      <div class="judge-area">${judgeBtns}</div>
+      <div class="card-foot">
+        <span class="org-name">🏛 ${escHtml(org)}</span>
+        ${specLink}
+      </div>
+    </div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// 初期化
+// ══════════════════════════════════════════════════════════
+
+(function init() {
+  // 保存済みGAS URLを復元（ZONE1・ZONE2共通）
+  const savedUrl = localStorage.getItem('nd_gas_url') || localStorage.getItem('nd_gas_endpoint') || '';
+  if (savedUrl) {
+    const z1 = document.getElementById('gasUrlInput');
+    if (z1) z1.value = savedUrl;
+    const z2 = document.getElementById('gasEndpointInput');
+    if (z2) z2.value = savedUrl;
+    GAS_ENDPOINT = savedUrl;
+  }
+
+  // 現在日時をヘッダーに
+  const now = new Date();
+  document.getElementById('headerMeta').textContent =
+    `${now.getFullYear()}/${now.getMonth()+1}/${now.getDate()} 更新 — 入札案件モニタリング`;
+})();
+</script>
+</body>
+</html>
